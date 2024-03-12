@@ -43,7 +43,6 @@ class Car{
             x:this.x-Math.sin(Math.PI+this.angle+alpha)*rad,
             y:this.y-Math.cos(Math.PI+this.angle+alpha)*rad
         });
-        // console.log(points)
         return points;
     }
 
@@ -98,11 +97,10 @@ class Car{
 
         // ctx.restore();
         ctx.beginPath();
-        console.log(this.polygon);
-        // ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
-        // for(let i=1;i<this.polygon.length;i++){
-        //     ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
-        // }
+        ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
+        for(let i=1;i<this.polygon.length;i++){
+            ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
+        }
         ctx.fill();
 
         this.sensor.draw(ctx);
