@@ -84,7 +84,7 @@ class Car{
 
     draw(ctx){
         ctx.beginPath();
-        if (this.polygon && this.polygon.length > 0)
+        if (this.polygon && this.polygon.length > 0)    // BUG HERE
         {
             ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
             for(let i=1;i<this.polygon.length;i++){
