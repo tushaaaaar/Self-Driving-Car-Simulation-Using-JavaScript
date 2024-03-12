@@ -10,6 +10,7 @@ class Car{
         this.maxSpeed=2.4;
         this.friction=0.05;
         this.angle=0;
+        this.damaged=false;
 
         this.sensor=new Sensor(this);
         this.controls=new Controls();
@@ -18,7 +19,18 @@ class Car{
     update(roadBorders){
         this.#move();
         this.polygon=this.#createPolygon();
+        this.damaged=this.#assessDamage(roadBorders);
         this.sensor.update(roadBorders);
+    }
+
+    #assessDamage(roadBorders)
+    {
+        for(let i=0; i<roadBorders.length;i++)
+        {
+            if(polysIntersect(this.polygon, roadBorders[i]))
+                return true;
+        }
+        return false;
     }
 
     #createPolygon()
@@ -82,9 +94,34 @@ class Car{
         this.y-=Math.cos(this.angle)*this.speed;
     }
 
-    draw(ctx){
+    draw(ctx, color){
+        // if (this.damage)
+        // {
+        //     ctx.fillStyle="grey";
+        // }
+        // else
+        // {
+        //     ctx.fillStyle="black";
+        // }
+        // ctx.fillStyle = this.damaged ? "grey" : "black";
+        // ctx.beginPath();
+        // if (this.polygon && this.polygon.length > 0)    // BUG HERE
+        // {
+        //     ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
+        //     for(let i=1;i<this.polygon.length;i++){
+        //         ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
+        //     }
+        //     ctx.fill();
+        // }
+
+        // this.sensor.draw(ctx);
+        if(this.damaged){
+            ctx.fillStyle="gray";
+        }else{
+            ctx.fillStyle=color;
+        }
         ctx.beginPath();
-        if (this.polygon && this.polygon.length > 0)    // BUG HERE
+        if (this.polygon && this.polygon.length > 0)
         {
             ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
             for(let i=1;i<this.polygon.length;i++){
@@ -92,7 +129,8 @@ class Car{
             }
             ctx.fill();
         }
-
-        this.sensor.draw(ctx);
+        if(this.sensor){
+            this.sensor.draw(ctx);
     }
+}
 }
