@@ -83,26 +83,15 @@ class Car{
     }
 
     draw(ctx){
-        // ctx.save();
-        // ctx.translate(this.x,this.y);
-        // ctx.rotate(-this.angle);
-        // ctx.beginPath();
-        // ctx.rect(
-        //     -this.width/2,
-        //     -this.height/2,
-        //     this.width,
-        //     this.height
-        // );
-        // ctx.fill();
-
-        // ctx.restore();
         ctx.beginPath();
-        z = this.polygon;
-        // ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
-        // for(let i=1;i<this.polygon.length;i++){
-        //     ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
-        // }
-        // ctx.fill();
+        if (this.polygon && this.polygon.length > 0)
+        {
+            ctx.moveTo(this.polygon[0].x,this.polygon[0].y);
+            for(let i=1;i<this.polygon.length;i++){
+                ctx.lineTo(this.polygon[i].x,this.polygon[i].y);
+            }
+            ctx.fill();
+        }
 
         this.sensor.draw(ctx);
     }
