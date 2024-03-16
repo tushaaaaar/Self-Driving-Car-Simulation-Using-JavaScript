@@ -1,32 +1,81 @@
-const canvas=document.getElementById("myCanvas");
-canvas.width=300;
+const carCanvas=document.getElementById("carCanvas");
+carCanvas.width=300;
+const networkCanvas=document.getElementById("networkCanvas");
+networkCanvas.width=600;
 
-const ctx = canvas.getContext("2d");
-const road = new Road(canvas.width/2,canvas.width*0.9);
-const car=new Car(road.getLaneCenter(1),750,45,70, "KEYS");
+const carCtx = carCanvas.getContext("2d");
+const networkCtx = networkCanvas.getContext("2d");
+const road = new Road(carCanvas.width/2,carCanvas.width*0.9);
+
+const N=100;
+const cars=generateCars(N);
+let bestCar=cars[0];
+if(localStorage.getItem("bestBrain")){
+    bestCar.brain=JSON.parse(
+        localStorage.getItem("bestBrain"));
+}
+
 const traffic=[
-    new Car(road.getLaneCenter(1), 300, 45, 70, "DUMMY", 2)
+    new Car(road.getLaneCenter(1), -200, 45, 70, "DUMMY", 2),
+    new Car(road.getLaneCenter(0), -400, 45, 70, "DUMMY", 2),
+    new Car(road.getLaneCenter(2), -400, 45, 70, "DUMMY", 2)
 ];
 
 
 animate();
 
-function animate(){
+function save(){
+    localStorage.setItem("bestBrain",
+        JSON.stringify(bestCar.brain));
+    console.log("Progress Saved!");
+}
+
+function discard(){
+    localStorage.removeItem("bestBrain");
+}
+
+
+function generateCars(N){
+    const cars=[];
+    for (let i=1;i<N;i++){
+        cars.push(new Car(road.getLaneCenter(1),300,45,70,"AI"))
+    }
+    return cars;
+}
+
+function animate(time){
     for (let i=0; i<traffic.length;i++){
         traffic[i].update(road.borders, []);
     }
-    car.update(road.borders, traffic);
-    canvas.height=window.innerHeight;
-    
-    ctx.save();
-    ctx.translate(0,-car.y+canvas.height*0.8);
-
-    road.draw(ctx);
-    for (let i=0;i<traffic.length;i++){
-        traffic[i].draw(ctx, "red");
+    for (let i=0;i<cars.length;i++){
+        cars[i].update(road.borders, traffic);
     }
-    car.draw(ctx, "blue");
+    bestCar=cars.find(
+        c=>c.y==Math.min(
+            ...cars.map(c=>c.y)
+        ));
+
+    carCanvas.height=window.innerHeight;
+    networkCanvas.height=window.innerHeight;
     
-    ctx.restore();
+    carCtx.save();
+    carCtx.translate(0,-bestCar.y+carCanvas.height*0.8);
+
+    road.draw(carCtx);
+    for (let i=0;i<traffic.length;i++){
+        traffic[i].draw(carCtx, "red");
+    }
+
+    carCtx.globalAlpha=0.2;
+    for (let i=0;i<cars.length;i++){
+        cars[i].draw(carCtx, "blue");
+    }
+    carCtx.globalAlpha=1;
+    bestCar.draw(carCtx, "blue",true);
+
+    carCtx.restore();
+
+    networkCtx.lineDashOffset=-time/50;
+    Visualizer.drawNetwork(networkCtx,bestCar.brain);
     requestAnimationFrame(animate);
 }
