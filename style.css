@@ -21,9 +21,9 @@ button{
 button:hover{
     background: blue;
 }
-#networkCanvas{
+/* #networkCanvas{
     background: black;
-}
+} */
 #carCanvas{
     background: lightgray;
 }
